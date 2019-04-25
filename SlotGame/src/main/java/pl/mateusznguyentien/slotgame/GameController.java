@@ -40,7 +40,7 @@ public class GameController {
             return new ResponseEntity<>(result,HttpStatus.OK);
         }
 
-        return new ResponseEntity<>("some response",HttpStatus.OK); //TODO
+        return new ResponseEntity<>("some response",HttpStatus.OK); //TODO error handler
 
     }
 
@@ -55,18 +55,14 @@ public class GameController {
             if (gameiterator.getGameId()==spin.getGameId()){
 
                 game = gameiterator;
-                game.spin(spin.getRno());
-                //game.getReels();
+                game.reelsResult(spin.getRno());
                 String result = "{\n" +
                         "   status: \"OK\" ,\n" +
                         "   gameId: "+game.getGameId()+",\n" +
                         "   rno: "+game.getRno()+"\n" +
                         "   symbols: [\n" +
-                        "   [number, number, number],\n" +
-                        "   [number, number, number],\n" +
-                        "   [number, number, number]\n" +
-                        "   ],\n" +
-                        "   win: (the sum of the winnings)\n" +
+                        "   "+game.getReelsresult()+
+                        "   win: "+game.getLastwin()+"\n" +
                         "}";
                 return new ResponseEntity<>(result,HttpStatus.OK);
             }
@@ -74,7 +70,7 @@ public class GameController {
 
 
 
-        return new ResponseEntity<>("some response",HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>("some response",HttpStatus.INTERNAL_SERVER_ERROR); // TODO error handler
     }
 
     @RequestMapping(value = "/endGame", method = RequestMethod.POST)
@@ -96,13 +92,13 @@ public class GameController {
         result = "{\n" +
                 "   status: \"ERROR\" ,\n" +
                 "}";
-        return new ResponseEntity<>(result,HttpStatus.OK);
+        return new ResponseEntity<>(result,HttpStatus.OK);  //TODO error handler
     }
 
     @RequestMapping(value = "/sessions", method = RequestMethod.GET)
     public ResponseEntity<LinkedList<Game>> sessions(){
         return new ResponseEntity<>(games,HttpStatus.OK);
     }
-    
+    //TODO sessions settings
 }
 

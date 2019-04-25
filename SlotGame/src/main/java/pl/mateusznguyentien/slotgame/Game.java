@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -13,13 +14,14 @@ import java.util.Random;
 @Data
 public class Game {
     private int gameId;
-    private int[][] reels ;
-    private int[] spin ;
-    private double[] winnings;
+    @ToString.Exclude private int[][] reels ;
+    @ToString.Exclude private int[] spin ;
+    @ToString.Exclude private double[] winnings;
     private int rno;
     private GameStatus status = GameStatus.INPROGRSS ;
-    private ArrayList<Integer> spins= new ArrayList<>();
-    private int sumspin;
+    @ToString.Exclude private ArrayList<Integer> spins= new ArrayList<>();
+    private int[][] reelsresult;
+    private int lastwin;
 
     public Game(){
 
@@ -33,15 +35,15 @@ public class Game {
         Random r =new Random();
         this.rno = r.nextInt(500);
     }
-    public void spin(int nextspin){
-        this.spins.add(nextspin);
-        sumspin+=nextspin;
-    }
-    public int[][] getReelsResult(int rno){
+
+    public void reelsResult(int rno){
 
         this.spins.add(rno);
-        sumspin+=rno;
-        int[][] reelsresult = new int[3][3];
+        this.rno+=rno;
+        if(this.rno>500){
+            this.rno-=500;
+        }
+        reelsresult = new int[3][3];
 
         if(rno==0){
             for (int i = 0; i < 3; i++) {
@@ -50,16 +52,32 @@ public class Game {
                 reelsresult[i][2] = reels[i][2];
             }
         }else {
-            int spinindex = spin.length % rno;
+            int spinindex = spin.length % this.rno;
             for (int i = 0; i < 3; i++) {
-                int reelsindex = reels[i].length % spin[spinindex];
-                reelsresult[i][0] = reels[i][reelsindex];
-                reelsresult[i][1] = reels[i][reelsindex + 1];
-                reelsresult[i][2] = reels[i][reelsindex + 2];
+                int reelsindex = reels[i].length % spin[spinindex-1];
+                //FIXME blad z indeksowaniem
+                reelsresult[i][0] = reels[i][reelsindex - 1];
+                reelsresult[i][1] = reels[i][reelsindex ];
+                reelsresult[i][2] = reels[i][reelsindex + 1];
             }
         }
 
-        return reelsresult;
+        int win = 0;
+
+        for (int i = 0; i < 3; i++){
+            if (reelsresult[0][i]==reelsresult[1][i]&&reelsresult[1][i]==reelsresult[2][i]){
+                win+=this.winnings[reelsresult[0][i]];
+            }
+
+        }
+        if(reelsresult[0][0]==reelsresult[1][1]&&reelsresult[1][1]==reelsresult[2][2]){
+            win+=this.winnings[reelsresult[0][0]];
+        }
+        if(reelsresult[0][2]==reelsresult[1][1]&&reelsresult[1][1]==reelsresult[2][0]){
+            win+=this.winnings[reelsresult[0][2]];
+        }
+        this.lastwin=win;
+
     }
 
 }
