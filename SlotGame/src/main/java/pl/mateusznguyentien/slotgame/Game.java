@@ -20,8 +20,8 @@ public class Game {
     private int rno;
     private GameStatus status = GameStatus.INPROGRSS ;
     @ToString.Exclude private ArrayList<Integer> spins= new ArrayList<>();
-    private int[][] reelsresult;
-    private int lastwin;
+    @ToString.Exclude private int[][] reelsresult;
+    private double lastwin;
 
     public Game(){
 
@@ -36,7 +36,7 @@ public class Game {
         this.rno = r.nextInt(500);
     }
 
-    public void reelsResult(int rno){
+    public String reelsResult(int rno){
 
         this.spins.add(rno);
         this.rno+=rno;
@@ -54,15 +54,17 @@ public class Game {
         }else {
             int spinindex = spin.length % this.rno;
             for (int i = 0; i < 3; i++) {
+
                 int reelsindex = reels[i].length % spin[spinindex-1];
-                //FIXME blad z indeksowaniem
+
                 reelsresult[i][0] = reels[i][reelsindex - 1];
                 reelsresult[i][1] = reels[i][reelsindex ];
                 reelsresult[i][2] = reels[i][reelsindex + 1];
+
             }
         }
 
-        int win = 0;
+        double win = 0;
 
         for (int i = 0; i < 3; i++){
             if (reelsresult[0][i]==reelsresult[1][i]&&reelsresult[1][i]==reelsresult[2][i]){
@@ -78,7 +80,15 @@ public class Game {
         }
         this.lastwin=win;
 
+        String result = "[";
+        for (int i = 0; i < 3; i++) {
+            result+="\t["+this.reelsresult[i][0]+", "+this.reelsresult[i][1]+", "+this.reelsresult[i][2]+"],\n";
+        }
+        result += "],\n\twin: "+win;
+        return  result;
     }
+
+
 
 }
 

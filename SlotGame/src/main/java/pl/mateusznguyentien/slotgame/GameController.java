@@ -55,14 +55,13 @@ public class GameController {
             if (gameiterator.getGameId()==spin.getGameId()){
 
                 game = gameiterator;
-                game.reelsResult(spin.getRno());
+                //game.reelsResult(spin.getRno());
                 String result = "{\n" +
                         "   status: \"OK\" ,\n" +
                         "   gameId: "+game.getGameId()+",\n" +
                         "   rno: "+game.getRno()+"\n" +
                         "   symbols: [\n" +
-                        "   "+game.getReelsresult()+
-                        "   win: "+game.getLastwin()+"\n" +
+                        "   "+game.reelsResult(spin.getRno())+"\n"+
                         "}";
                 return new ResponseEntity<>(result,HttpStatus.OK);
             }
